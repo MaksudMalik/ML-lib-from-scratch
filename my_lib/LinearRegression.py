@@ -34,16 +34,16 @@ class LinearRegression:
             (a,b)=self.grad_desc(X,Y,a,b,learning_rate,m,n)
             cost_hist.append(self.cost(X,Y,a,b))
 
-            if (i+1)%100==0:
-                print(f'Iteration={i+1}, Cost={cost_hist[i+1]}, weight/weights={a}, bias={b}')
+            # if (i+1)%100==0:
+            #     print(f'Iteration={i+1}, Cost={cost_hist[i+1]}, weights={a}, bias={b}')
 
             epsilon=(abs(cost_hist[i+1]-cost_hist[i])/cost_hist[i+1])*100
 
-            if epsilon<0.001:
-                print(f'Iteration={i+1}, Cost={cost_hist[i+1]}, a={a}, b={b}')
-                self.coefficient=a
-                self.bias=b
-                return
+            # if epsilon<0.001:
+            #     print(f'Iteration={i+1}, Cost={cost_hist[i+1]}, a={a}, b={b}')
+            #     self.coefficient=a
+            #     self.bias=b
+            #     return
 
         self.coefficient=a
         self.bias=b
