@@ -1,25 +1,33 @@
 import numpy as np
 import pandas as pd
 
-class LinearRegression:
+def sigmoid(x):
+    z=(1/(1+np.exp(-x)))
+    return z
+
+class LogisticRegression:
 
     def __init__(self):
         self.coefficient=None
         self.bias=None
 
+    def f(self,X,a,b):
+        fx=sigmoid(np.dot(a,X)+b)
+        return fx
+
     def cost(self,X,Y,a,b):
         m=len(Y)
-        cost=sum([(np.dot(a,X[i])+b-Y[i])**2 for i in range(m)])/(2*m)
+        cost=sum([(-Y[i]*np.log(self.f(X[i],a,b)) - (1-Y[i])*np.log(1-self.f(X[i],a,b))) for i in range(m)])/(2*m)
         return cost
-
+    
     def grad_desc(self,X,Y,a,b,learning_rate,m,n):
         temp_a=np.zeros(n)
         temp_b=0
         for j in range (n):
-            temp_a[j]=a[j]-learning_rate*(1/m)*sum([(np.dot(a,X[i])+b-Y[i])*X[i][j] for i in range(m)])
-        temp_b=b-learning_rate*(1/m)*sum([(np.dot(a,X[i])+b-Y[i]) for i in range(m)])
+            temp_a[j]=a[j]-learning_rate*(1/m)*sum([(self.f(X[i],a,b)-Y[i])*X[i][j] for i in range(m)])
+        temp_b=b-learning_rate*(1/m)*sum([(self.f(X[i],a,b)-Y[i]) for i in range(m)])
         return (temp_a,temp_b)
-        
+
     def train(self,X,Y):
         X=X.values
         Y=Y.values
@@ -48,13 +56,13 @@ class LinearRegression:
         self.coefficient=a
         self.bias=b
         return
-    
+
     def predict(self,X):
         try:
             X=X.values
         except:
             None
-        pred=(self.coefficient@X.T)+self.bias
-        return pred
-        
-
+        threshold=0.5
+        yhat=sigmoid((self.coefficient@X.T)+self.bias)
+        y_predicted = [1 if i > threshold else 0 for i in yhat]
+        return y_predicted
