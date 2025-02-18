@@ -9,28 +9,22 @@ class Kmeans:
         self.assigned_indexes=None
 
     def initialize_centroid(self,X,k):
-        centroids=[]
-        n_samples=X.shape[0]
-        centroids.append(X[np.random.randint(n_samples)])
-        for _ in range(1,k):
-            dist=np.min([np.sum((X-centroid)**2,axis=1) for centroid in centroids], axis=0)
-            prob=dist**2/np.sum(dist**2)
-            centroids.append(X[np.random.choice(n_samples, p=prob)])
-        centroids=np.array(centroids)
+        n_samples = X.shape[0]
+        centroids = np.zeros((k, X.shape[1]))
+        centroids[0] = X[np.random.randint(n_samples)]
+        for i in range(1, k):
+            dist = np.min(np.linalg.norm(X[:, np.newaxis] - centroids[:i], axis=2), axis=1)
+            prob = dist / np.sum(dist)
+            centroids[i] = X[np.random.choice(n_samples, p=prob)]
         return centroids
     
-    def assign_centroid(self,X,centroids):
-        assigned=np.zeros(X.shape[0])
-        for i,point in enumerate(X):
-            dists=np.sqrt(np.sum((point-centroids)**2,axis=1))
-            assigned[i]=np.argmin(dists)
-        return assigned
+    def assign_centroid(self, X, centroids):
+        dists = np.linalg.norm(X[:, np.newaxis] - centroids, axis=2)
+        return np.argmin(dists, axis=1)
+
     
-    def compute_new_centroids(self,X,assigned_centroid,k):
-        centroids=np.zeros((k,X.shape[1]))
-        for i in range (k):
-            points = X[assigned_centroid==i]  
-            centroids[i]=np.mean(points, axis=0)
+    def compute_new_centroids(self,X,assigned_centroids,k):
+        centroids = np.array([X[assigned_centroids == i].mean(axis=0) for i in range(k)])
         return centroids
     
     def plot_graph(self,X,centroids,assigned_centroids):
@@ -64,7 +58,10 @@ class Kmeans:
         centroids=initial_centroids
         for i in range (max_iters):
             assigned_centroids=self.assign_centroid(X,centroids)
-            centroids=self.compute_new_centroids(X,assigned_centroids,k)
+            new_centroids=self.compute_new_centroids(X,assigned_centroids,k)
+            if np.all(centroids==new_centroids):
+                break
+            centroids=new_centroids
         if plot:
             self.plot_graph(X,centroids, assigned_centroids)
         self.centroids=centroids
