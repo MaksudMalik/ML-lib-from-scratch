@@ -3,7 +3,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 
-class KNN:
+class Kmeans:
     def __init__(self):
         self.centroids=None
         self.assigned_indexes=None
@@ -59,7 +59,7 @@ class KNN:
             print("Cannot plot multidimensional data (dimension >= 4)")
         return
 
-    def fit_knn(self,X,k,max_iters=15,plot=False):
+    def fit_kmeans(self,X,k,max_iters=15,plot=False):
         initial_centroids=self.initialize_centroid(X,k)
         centroids=initial_centroids
         for i in range (max_iters):
